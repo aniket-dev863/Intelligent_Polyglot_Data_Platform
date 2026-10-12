@@ -11,6 +11,7 @@ const productRoutes = require('./routes/products');
 const cartRoutes = require('./routes/cart');
 const graphRoutes = require('./routes/graph');
 const statsRoutes = require('./routes/stats');
+const routerRoutes = require('./routes/router');
 
 const app = express();
 app.use(cors());
@@ -23,6 +24,8 @@ app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/graph', graphRoutes);
 app.use('/api/stats', statsRoutes);
+app.use('/api/query', routerRoutes);
+
 
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 // eslint-disable-next-line no-unused-vars
