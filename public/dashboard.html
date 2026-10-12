@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intelligent Polyglot Data Platform — Live Operations Dashboard</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #38bdf8;
+      --primary-hover: #0284c7;
+      --success: #4ade80;
+      --warning: #fbbf24;
+      --danger: #f87171;
+      --code-bg: #090d16;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 24px;
+      line-height: 1.5;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+      background-color: #0369a1;
+      color: #e0f2fe;
+    }
+
+    .status-pill {
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .status-promote { background: rgba(74, 222, 128, 0.2); color: var(--success); }
+    .status-demote { background: rgba(248, 113, 113, 0.2); color: var(--danger); }
+    .status-cache { background: rgba(56, 189, 248, 0.2); color: var(--primary); }
+    .status-mongo { background: rgba(251, 191, 36, 0.2); color: var(--warning); }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn {
+      background-color: var(--primary);
+      color: #0f172a;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--border);
+      color: var(--text);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .nl-form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .nl-input {
+      flex: 1;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .nl-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .nl-presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .preset-pill {
+      font-size: 12px;
+      background: #090d16;
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 16px;
+      color: var(--primary);
+      cursor: pointer;
+    }
+
+    .preset-pill:hover {
+      background: #1e293b;
+      border-color: var(--primary);
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px;
+      overflow-x: auto;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 12px;
+      color: #38bdf8;
+      max-height: 280px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 24px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <h1>Intelligent Polyglot Data Platform</h1>
+      <p style="color: var(--text-muted); font-size: 13px;">Adaptive Query Router • ARIMA Forecasting • Storage Optimizer • GenAI Layer</p>
+    </div>
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <span class="badge" id="refreshTimer">Auto-refresh: 5s</span>
+      <button class="btn btn-secondary" onclick="fetchAll()">Refresh Now</button>
+    </div>
+  </header>
+
+  <!-- GenAI Natural Language Layer Section -->
+  <div class="card" style="margin-bottom: 24px;">
+    <div class="card-title">
+      <span>Natural Language Query & Explanation (GenAI Layer)</span>
+      <span style="font-size: 12px; color: var(--text-muted);">POST /api/ask</span>
+    </div>
+
+    <div class="nl-presets">
+      <span style="font-size: 12px; color: var(--text-muted); padding: 4px 0;">Try presets:</span>
+      <button class="preset-pill" onclick="setQuery('Show me products in electronics under $70')">Electronics under $70</button>
+      <button class="preset-pill" onclick="setQuery('Show me products in fitness under $50')">Fitness under $50</button>
+      <button class="preset-pill" onclick="setQuery('Why was P1001 cached?')">Why was P1001 cached?</button>
+      <button class="preset-pill" onclick="setQuery('Why was P1002 promoted?')">Why was P1002 promoted?</button>
+    </div>
+
+    <form class="nl-form" onsubmit="handleAsk(event)">
+      <input type="text" id="nlInput" class="nl-input" placeholder="Ask anything, e.g.: 'Show me products in electronics under $70' or 'Why was P1001 cached?'" required>
+      <button type="submit" class="btn" id="askBtn">Ask Assistant</button>
+    </form>
+
+    <div id="askResult" style="display: none;">
+      <pre id="askJson"></pre>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <!-- Storage Optimizer Decisions -->
+    <div class="card">
+      <div class="card-title">
+        <span>Optimizer Decisions (Promote/Demote)</span>
+        <button class="btn btn-secondary" style="font-size: 11px; padding: 4px 8px;" onclick="triggerOptimizer()">Run Cycle</button>
+      </div>
+      <div style="overflow-x: auto; max-height: 320px;">
+        <table>
+          <thead>
+            <tr>
+              <th>Action</th>
+              <th>Product</th>
+              <th>Forecast</th>
+              <th>Count</th>
+              <th>Reason</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody id="optimizerTable">
+            <tr><td colspan="6" class="empty-state">Loading optimizer decisions...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Adaptive Query Routing Decisions -->
+    <div class="card">
+      <div class="card-title">
+        <span>Adaptive Routing Decisions</span>
+        <span style="font-size: 12px; color: var(--text-muted);">GET /api/query/decisions</span>
+      </div>
+      <div style="overflow-x: auto; max-height: 320px;">
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Source</th>
+              <th>Latency</th>
+              <th>Routing Reason</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody id="routingTable">
+            <tr><td colspan="5" class="empty-state">Loading routing decisions...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Access Log & Counters -->
+  <div class="card">
+    <div class="card-title">
+      <span>Recent Access Activity & Counters (Redis Signal)</span>
+      <span style="font-size: 12px; color: var(--text-muted);">GET /api/stats</span>
+    </div>
+    <div style="overflow-x: auto; max-height: 280px;">
+      <table>
+        <thead>
+          <tr>
+            <th>Product ID</th>
+            <th>Source</th>
+            <th>Latency (ms)</th>
+            <th>Timestamp</th>
+          </tr>
+        </thead>
+        <tbody id="accessTable">
+          <tr><td colspan="4" class="empty-state">Loading access log...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    async function fetchStats() {
+      try {
+        const res = await fetch('/api/stats');
+        const data = await res.json();
+        const tbody = document.getElementById('accessTable');
+        if (!data.recentAccess || data.recentAccess.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No recent access log entries</td></tr>';
+          return;
+        }
+        tbody.innerHTML = data.recentAccess.map(item => `
+          <tr>
+            <td><strong>${item.productId}</strong></td>
+            <td><span class="status-pill ${item.source.includes('cache') ? 'status-cache' : 'status-mongo'}">${item.source}</span></td>
+            <td>${item.latencyMs} ms</td>
+            <td>${new Date(item.timestamp).toLocaleTimeString()}</td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error('fetchStats error:', err);
+      }
+    }
+
+    async function fetchRoutingDecisions() {
+      try {
+        const res = await fetch('/api/query/decisions');
+        const data = await res.json();
+        const tbody = document.getElementById('routingTable');
+        if (!data || data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No routing decisions logged yet</td></tr>';
+          return;
+        }
+        tbody.innerHTML = data.map(item => `
+          <tr>
+            <td><strong>${item.productId}</strong></td>
+            <td><span class="status-pill ${item.source === 'redis-cache' ? 'status-cache' : 'status-mongo'}">${item.source}</span></td>
+            <td>${item.latencyMs} ms</td>
+            <td>${item.reason}</td>
+            <td>${new Date(item.timestamp).toLocaleTimeString()}</td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error('fetchRoutingDecisions error:', err);
+      }
+    }
+
+    async function fetchOptimizerDecisions() {
+      try {
+        const res = await fetch('/api/optimizer/decisions');
+        const data = await res.json();
+        const tbody = document.getElementById('optimizerTable');
+        if (!data || data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No optimizer decisions logged yet</td></tr>';
+          return;
+        }
+        tbody.innerHTML = data.map(item => `
+          <tr>
+            <td><span class="status-pill ${item.action === 'PROMOTE' ? 'status-promote' : 'status-demote'}">${item.action}</span></td>
+            <td><strong>${item.productId}</strong> ${item.productName ? `(${item.productName})` : ''}</td>
+            <td>${item.forecastValue != null ? item.forecastValue : '-'}</td>
+            <td>${item.currentAccessCount != null ? item.currentAccessCount : '-'}</td>
+            <td>${item.reason}</td>
+            <td>${new Date(item.timestamp).toLocaleTimeString()}</td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error('fetchOptimizerDecisions error:', err);
+      }
+    }
+
+    async function triggerOptimizer() {
+      try {
+        await fetch('/api/optimizer/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+        await fetchOptimizerDecisions();
+      } catch (err) {
+        alert('Failed to trigger optimizer cycle: ' + err.message);
+      }
+    }
+
+    function setQuery(text) {
+      document.getElementById('nlInput').value = text;
+      handleAsk();
+    }
+
+    async function handleAsk(e) {
+      if (e) e.preventDefault();
+      const input = document.getElementById('nlInput');
+      const query = input.value.trim();
+      if (!query) return;
+
+      const btn = document.getElementById('askBtn');
+      const container = document.getElementById('askResult');
+      const jsonPre = document.getElementById('askJson');
+
+      btn.disabled = true;
+      btn.innerText = 'Processing...';
+
+      try {
+        const res = await fetch('/api/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query }),
+        });
+        const data = await res.json();
+        container.style.display = 'block';
+        jsonPre.innerText = JSON.stringify(data, null, 2);
+      } catch (err) {
+        container.style.display = 'block';
+        jsonPre.innerText = JSON.stringify({ error: err.message }, null, 2);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Ask Assistant';
+      }
+    }
+
+    function fetchAll() {
+      fetchStats();
+      fetchRoutingDecisions();
+      fetchOptimizerDecisions();
+    }
+
+    fetchAll();
+    setInterval(fetchAll, 5000);
+  </script>
+</body>
+</html>
