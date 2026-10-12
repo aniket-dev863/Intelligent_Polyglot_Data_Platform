@@ -12,6 +12,8 @@ const cartRoutes = require('./routes/cart');
 const graphRoutes = require('./routes/graph');
 const statsRoutes = require('./routes/stats');
 const routerRoutes = require('./routes/router');
+const optimizerRoutes = require('./routes/optimizer');
+const { startOptimizer } = require('./services/storageOptimizer');
 
 const app = express();
 app.use(cors());
@@ -25,6 +27,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/graph', graphRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/query', routerRoutes);
+app.use('/api/optimizer', optimizerRoutes);
 
 
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
@@ -49,9 +52,13 @@ async function start() {
     console.warn('[Neo4j] connection failed — graph routes will error until it is reachable:', err.message);
   }
 
+  // Start background storage optimizer
+  startOptimizer();
+
   app.listen(PORT, () => console.log(`[Server] Listening on port ${PORT}`));
 }
 
 start();
+
 
 module.exports = app;
