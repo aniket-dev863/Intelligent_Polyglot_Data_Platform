@@ -1,0 +1,39 @@
+{
+  "products": [
+    { "_id": "P1001", "name": "Wireless Noise-Cancelling Headphones", "category": "electronics", "price": 89.99, "attributes": { "batteryLifeHrs": 30, "color": "black" }, "tags": ["trending", "bestseller"], "stock": 214 },
+    { "_id": "P1002", "name": "Mechanical Keyboard", "category": "electronics", "price": 64.5, "attributes": { "switchType": "brown", "backlit": true }, "tags": ["bestseller"], "stock": 120 },
+    { "_id": "P1003", "name": "27-inch 4K Monitor", "category": "electronics", "price": 249.0, "attributes": { "refreshRateHz": 60, "panel": "IPS" }, "tags": [], "stock": 45 },
+    { "_id": "P1004", "name": "USB-C Hub", "category": "electronics", "price": 22.99, "attributes": { "ports": 7 }, "tags": ["trending"], "stock": 300 },
+    { "_id": "P1005", "name": "Running Shoes", "category": "apparel", "price": 59.99, "attributes": { "size": "US 9", "color": "grey" }, "tags": ["bestseller"], "stock": 80 },
+    { "_id": "P1006", "name": "Cotton T-Shirt", "category": "apparel", "price": 14.99, "attributes": { "size": "M", "color": "white" }, "tags": [], "stock": 500 },
+    { "_id": "P1007", "name": "Denim Jacket", "category": "apparel", "price": 45.0, "attributes": { "size": "L" }, "tags": ["trending"], "stock": 65 },
+    { "_id": "P1008", "name": "Yoga Mat", "category": "fitness", "price": 19.99, "attributes": { "thicknessMm": 6 }, "tags": [], "stock": 150 },
+    { "_id": "P1009", "name": "Adjustable Dumbbell Set", "category": "fitness", "price": 129.0, "attributes": { "maxWeightKg": 20 }, "tags": ["bestseller"], "stock": 30 },
+    { "_id": "P1010", "name": "Stainless Steel Water Bottle", "category": "fitness", "price": 12.5, "attributes": { "capacityMl": 750 }, "tags": ["trending"], "stock": 400 },
+    { "_id": "P1011", "name": "Organic Coffee Beans 1kg", "category": "grocery", "price": 16.99, "attributes": { "roast": "medium" }, "tags": [], "stock": 200 },
+    { "_id": "P1012", "name": "Non-Stick Frying Pan", "category": "home", "price": 27.5, "attributes": { "diameterCm": 28 }, "tags": [], "stock": 90 }
+  ],
+  "users": [
+    { "_id": "U001", "name": "Asha Menon", "email": "asha.menon@example.com" },
+    { "_id": "U002", "name": "Rahul Verma", "email": "rahul.verma@example.com" },
+    { "_id": "U003", "name": "Priya Nair", "email": "priya.nair@example.com" },
+    { "_id": "U004", "name": "Karthik Iyer", "email": "karthik.iyer@example.com" },
+    { "_id": "U005", "name": "Sneha Das", "email": "sneha.das@example.com" }
+  ],
+  "purchases": [
+    { "customerId": "U001", "productId": "P1001", "quantity": 1 },
+    { "customerId": "U001", "productId": "P1002", "quantity": 1 },
+    { "customerId": "U001", "productId": "P1004", "quantity": 2 },
+    { "customerId": "U002", "productId": "P1001", "quantity": 1 },
+    { "customerId": "U002", "productId": "P1003", "quantity": 1 },
+    { "customerId": "U003", "productId": "P1005", "quantity": 1 },
+    { "customerId": "U003", "productId": "P1006", "quantity": 3 },
+    { "customerId": "U003", "productId": "P1007", "quantity": 1 },
+    { "customerId": "U004", "productId": "P1008", "quantity": 1 },
+    { "customerId": "U004", "productId": "P1009", "quantity": 1 },
+    { "customerId": "U004", "productId": "P1001", "quantity": 1 },
+    { "customerId": "U005", "productId": "P1010", "quantity": 2 },
+    { "customerId": "U005", "productId": "P1008", "quantity": 1 },
+    { "customerId": "U005", "productId": "P1002", "quantity": 1 }
+  ]
+}
