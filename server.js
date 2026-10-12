@@ -13,12 +13,15 @@ const graphRoutes = require('./routes/graph');
 const statsRoutes = require('./routes/stats');
 const routerRoutes = require('./routes/router');
 const optimizerRoutes = require('./routes/optimizer');
+const askRoutes = require('./routes/ask');
 const { startOptimizer } = require('./services/storageOptimizer');
+const path = require('path');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
@@ -28,6 +31,8 @@ app.use('/api/graph', graphRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/query', routerRoutes);
 app.use('/api/optimizer', optimizerRoutes);
+app.use('/api/ask', askRoutes);
+
 
 
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
