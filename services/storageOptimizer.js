@@ -11,7 +11,8 @@
 
 const Product = require('../models/Product');
 const { redisClient } = require('../db/redisClient');
-const { getForecast } = require('./forecastingClient');
+const forecastingClient = require('./forecastingClient');
+
 
 const OPTIMIZER_DECISIONS_KEY = 'optimizer:decisions';
 const MAX_DECISIONS = 500;
@@ -82,8 +83,9 @@ async function runOptimizationCycle(options = {}) {
       const isCurrentlyCached = Boolean(await redisClient.exists(cacheKey));
 
       // Get forecast
-      const forecast = await getForecast(productId);
+      const forecast = await forecastingClient.getForecast(productId);
       const predictedDemand = forecast.predictedDemand;
+
 
       results.evaluations.push({
         productId,

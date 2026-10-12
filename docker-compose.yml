@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   redis:
     image: redis:7-alpine
@@ -31,6 +29,20 @@ services:
     networks:
       - platform-net
 
+  forecasting:
+    build:
+      context: ./services/forecasting
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - PORT=5001
+    depends_on:
+      - redis
+    networks:
+      - platform-net
+
   api:
     build: .
     ports:
@@ -41,11 +53,18 @@ services:
       - NEO4J_URI=bolt://neo4j:7687
       - NEO4J_USER=neo4j
       - NEO4J_PASSWORD=password
+      - FORECASTING_SERVICE_URL=http://forecasting:5001
+      - OPTIMIZER_INTERVAL_SECONDS=30
+      - OPTIMIZER_PROMOTE_THRESHOLD=3
+      - OPTIMIZER_DEMOTE_THRESHOLD=1
+      - OPTIMIZER_CACHE_TTL_SECONDS=300
+      - LLM_PROVIDER=mock
       - PORT=4000
     depends_on:
       - redis
       - mongo
       - neo4j
+      - forecasting
     networks:
       - platform-net
 
