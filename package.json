@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node --test tests/*.test.js"
+    "test": "node --test --test-concurrency=1 tests/*.test.js",
+    "test:python": "services/forecasting/venv/bin/python -m unittest services/forecasting/test_forecasting.py",
+    "test:all": "npm test && npm run test:python",
+    "benchmark": "node benchmark/run_benchmark.js"
   },
   "keywords": [],
   "author": "",

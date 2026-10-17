@@ -144,11 +144,15 @@ async function processNaturalLanguageQuery(naturalQuery) {
     }
 
     if (tags && Array.isArray(tags) && tags.length > 0) {
-      mongoFilter.tags = { $in: tags };
+      const sanitizedTags = tags.filter((t) => typeof t === 'string' && t.trim().length > 0 && t.length <= 50);
+      if (sanitizedTags.length > 0) {
+        mongoFilter.tags = { $in: sanitizedTags };
+      }
     }
 
-    // Execute safe query via Mongoose
+    // Execute safe query via Mongoose with bounded limit
     const products = await Product.find(mongoFilter).limit(20).lean();
+
 
     return {
       intent: 'product_search',

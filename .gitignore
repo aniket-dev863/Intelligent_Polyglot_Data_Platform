@@ -6,3 +6,4 @@ __pycache__/
 venv/
 .venv/
 data/
+benchmark/benchmark_results.json

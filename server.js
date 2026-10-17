@@ -18,8 +18,10 @@ const { startOptimizer } = require('./services/storageOptimizer');
 const path = require('path');
 
 const app = express();
-app.use(cors());
+const corsOrigin = process.env.CORS_ORIGIN;
+app.use(cors(corsOrigin ? { origin: corsOrigin.split(',').map((s) => s.trim()) } : {}));
 app.use(express.json());
+
 app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 

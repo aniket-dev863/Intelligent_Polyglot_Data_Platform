@@ -5,17 +5,54 @@ const { logAccess } = require('../scripts/accessLogger');
 const ROUTING_DECISIONS_KEY = 'routing:decisions';
 const MAX_DECISIONS = 500;
 
+const inFlightRequests = new Map();
+
+/**
+ * Single-flight coalesce: guarantees only one concurrent database lookup
+ * is executed for a given resource key, preventing cache stampedes.
+ */
+async function singleFlight(key, fetcher) {
+  if (inFlightRequests.has(key)) {
+    return inFlightRequests.get(key);
+  }
+  const promise = Promise.resolve()
+    .then(fetcher)
+    .finally(() => {
+      inFlightRequests.delete(key);
+    });
+  inFlightRequests.set(key, promise);
+  return promise;
+}
+
 /**
  * Route a product read request adaptively.
  * Decides whether to serve from Redis cache or MongoDB based on availability
  * and access history signals in `access:count`.
  * 
  * @param {string} productId 
+ * @param {object} [options]
+ * @param {'adaptive'|'cache-aside'|'none'} [options.strategy]
  * @returns {Promise<{ product: Object, source: 'cache'|'mongodb', reason: string, latencyMs: number }>}
  */
-async function routeProductQuery(productId) {
+async function routeProductQuery(productId, options = {}) {
   const start = Date.now();
   const cacheKey = `cache:product:${productId}`;
+  const strategy = options.strategy || process.env.CACHE_STRATEGY || 'adaptive';
+
+  // Strategy 'none': bypass cache entirely (for performance benchmarking baseline)
+  if (strategy === 'none') {
+    const product = await singleFlight(`mongo:${productId}`, () => Product.findById(productId));
+    if (!product) {
+      const error = new Error('Product not found');
+      error.status = 404;
+      throw error;
+    }
+    const latencyMs = Date.now() - start;
+    const reason = 'Direct catalog lookup (cache disabled by strategy)';
+    await logRoutingDecision({ productId, source: 'mongodb', reason, latencyMs, timestamp: new Date().toISOString() });
+    await logAccess({ productId, source: 'mongodb', latencyMs });
+    return { product: product.toObject ? product.toObject() : product, source: 'mongodb', reason, latencyMs };
+  }
 
   // 1. Check if the item exists in Redis cache
   let cached = null;
@@ -44,12 +81,24 @@ async function routeProductQuery(productId) {
     };
   }
 
-  // 2. Fall back to MongoDB
-  const product = await Product.findById(productId);
+  // 2. Fall back to MongoDB with stampede single-flight coalescing
+  const product = await singleFlight(`mongo:${productId}`, () => Product.findById(productId));
   if (!product) {
     const error = new Error('Product not found');
     error.status = 404;
     throw error;
+  }
+
+  const plainProduct = product.toObject ? product.toObject() : product;
+
+  // Conventional cache-aside: populate on miss
+  if (strategy === 'cache-aside') {
+    const ttl = Number(process.env.CACHE_ASIDE_TTL_SECONDS || 300);
+    try {
+      await redisClient.set(cacheKey, JSON.stringify(plainProduct), { EX: ttl });
+    } catch (err) {
+      console.warn(`[QueryRouter] Failed to populate cache-aside key for ${productId}:`, err.message);
+    }
   }
 
   // Check access count in Redis for adaptive context
@@ -76,7 +125,7 @@ async function routeProductQuery(productId) {
   await logAccess({ productId, source: 'mongodb', latencyMs });
 
   return {
-    product: product.toObject ? product.toObject() : product,
+    product: plainProduct,
     source: 'mongodb',
     reason,
     latencyMs,
@@ -112,5 +161,8 @@ module.exports = {
   routeProductQuery,
   logRoutingDecision,
   getRecentRoutingDecisions,
+  singleFlight,
+  inFlightRequests,
   ROUTING_DECISIONS_KEY,
 };
+
