@@ -2,10 +2,12 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+const mongoose = require('mongoose');
 
 const { connectMongo } = require('./db/mongoClient');
-const { connectRedis } = require('./db/redisClient');
-const { verifyConnection: verifyNeo4j } = require('./db/neo4jClient');
+const { connectRedis, redisClient } = require('./db/redisClient');
+const { verifyConnection: verifyNeo4j, getDriver } = require('./db/neo4jClient');
+const { checkForecastingHealth } = require('./services/forecastingClient');
 
 const productRoutes = require('./routes/products');
 const cartRoutes = require('./routes/cart');
@@ -25,7 +27,28 @@ app.use(express.json());
 app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
+app.get('/health', async (req, res) => {
+  const [redisOk, mongoOk, neo4jOk, forecastingOk] = await Promise.all([
+    redisClient.ping().then(() => true).catch(() => false),
+    Promise.resolve(mongoose.connection.readyState === 1),
+    getDriver() ? getDriver().verifyConnectivity().then(() => true).catch(() => false) : Promise.resolve(false),
+    checkForecastingHealth(),
+  ]);
+
+  const checks = {
+    redis: redisOk ? 'online' : 'offline',
+    mongodb: mongoOk ? 'online' : 'offline',
+    neo4j: neo4jOk ? 'online' : 'offline',
+    forecasting: forecastingOk ? 'online' : 'offline',
+  };
+
+  const isHealthy = redisOk && mongoOk;
+  res.status(isHealthy ? 200 : 503).json({
+    status: isHealthy ? 'healthy' : 'degraded',
+    checks,
+    timestamp: new Date().toISOString(),
+  });
+});
 
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
@@ -34,8 +57,6 @@ app.use('/api/stats', statsRoutes);
 app.use('/api/query', routerRoutes);
 app.use('/api/optimizer', optimizerRoutes);
 app.use('/api/ask', askRoutes);
-
-
 
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 // eslint-disable-next-line no-unused-vars
@@ -66,6 +87,5 @@ async function start() {
 }
 
 start();
-
 
 module.exports = app;
