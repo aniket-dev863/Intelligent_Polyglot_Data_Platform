@@ -68,7 +68,7 @@ router.get('/products/:productId/recommendations', async (req, res) => {
        WHERE p1 <> p2
        RETURN p2.id AS productId, count(DISTINCT c) AS coPurchaseStrength
        ORDER BY coPurchaseStrength DESC
-       LIMIT $limit`,
+       LIMIT toInteger($limit)`,
       { productId: req.params.productId, limit }
     );
     res.json(result);
