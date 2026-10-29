@@ -16,6 +16,7 @@ const statsRoutes = require('./routes/stats');
 const routerRoutes = require('./routes/router');
 const optimizerRoutes = require('./routes/optimizer');
 const askRoutes = require('./routes/ask');
+const simulatorRoutes = require('./routes/simulator');
 const { startOptimizer } = require('./services/storageOptimizer');
 const path = require('path');
 
@@ -57,6 +58,7 @@ app.use('/api/stats', statsRoutes);
 app.use('/api/query', routerRoutes);
 app.use('/api/optimizer', optimizerRoutes);
 app.use('/api/ask', askRoutes);
+app.use('/api/simulator', simulatorRoutes);
 
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 // eslint-disable-next-line no-unused-vars

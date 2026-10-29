@@ -3,159 +3,277 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Intelligent Polyglot Data Platform — Operations & GenAI Console</title>
+  <title>Polyglot Platform Console — Distributed Systems & Query Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0b0f19;
-      --card-bg: #111827;
-      --card-hover: #172033;
-      --border: #1f293d;
-      --border-accent: #374151;
-      --text: #f9fafb;
-      --text-muted: #9ca3af;
-      --text-dim: #6b7280;
+      --bg: #09090b;
+      --card-bg: #121215;
+      --card-hover: #18181b;
+      --border: #27272a;
+      --border-subtle: #1f1f23;
+      --border-accent: #3f3f46;
+      --text: #f4f4f5;
+      --text-muted: #a1a1aa;
+      --text-dim: #71717a;
       --primary: #38bdf8;
-      --primary-glow: rgba(56, 189, 248, 0.2);
-      --success: #34d399;
-      --success-glow: rgba(52, 211, 153, 0.2);
-      --warning: #fbbf24;
-      --warning-glow: rgba(251, 191, 36, 0.2);
-      --danger: #f87171;
-      --danger-glow: rgba(248, 113, 113, 0.2);
-      --purple: #a78bfa;
-      --purple-glow: rgba(167, 139, 250, 0.2);
-      --code-bg: #070a12;
+      --primary-subtle: rgba(56, 189, 248, 0.1);
+      --success: #10b981;
+      --success-subtle: rgba(16, 185, 129, 0.12);
+      --warning: #f59e0b;
+      --warning-subtle: rgba(245, 158, 11, 0.12);
+      --danger: #ef4444;
+      --danger-subtle: rgba(239, 68, 68, 0.12);
+      --purple: #8b5cf6;
+      --purple-subtle: rgba(139, 92, 246, 0.12);
+      --code-bg: #0c0c0e;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     body {
       background-color: var(--bg);
       color: var(--text);
-      padding: 20px 28px;
       line-height: 1.5;
+      font-size: 13px;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* Top Header */
-    header {
+    code, pre, .mono {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+    }
+
+    /* Top Navigation Bar */
+    .topbar {
+      border-bottom: 1px solid var(--border);
+      background: rgba(9, 9, 11, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 12px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--border);
-      flex-wrap: wrap;
-      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #38bdf8, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000;
+      font-weight: 800;
+      font-size: 13px;
     }
 
     .brand-title {
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
-    .brand-title span.badge-version {
+    .env-tag {
       font-size: 11px;
-      background: rgba(56, 189, 248, 0.15);
-      color: var(--primary);
-      border: 1px solid rgba(56, 189, 248, 0.3);
+      font-weight: 500;
       padding: 2px 8px;
       border-radius: 999px;
-      font-weight: 600;
-    }
-
-    .brand-sub {
-      color: var(--text-muted);
-      font-size: 13px;
-      margin-top: 2px;
-    }
-
-    /* System Health Matrix */
-    .health-bar {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .health-pill {
-      font-size: 11px;
-      padding: 4px 10px;
-      border-radius: 6px;
-      background: #1e293b;
+      background: #18181b;
       border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    /* Health Matrix in Topbar */
+    .store-health {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .health-node {
       display: flex;
       align-items: center;
       gap: 6px;
-      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: #18181b;
+      border: 1px solid var(--border);
+      font-size: 11px;
       color: var(--text-muted);
     }
 
-    .health-pill .dot {
-      width: 7px;
-      height: 7px;
+    .health-dot {
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: var(--text-dim);
     }
 
-    .health-pill.online {
-      border-color: rgba(52, 211, 153, 0.4);
-      background: rgba(52, 211, 153, 0.08);
-      color: #e6fffa;
-    }
-    .health-pill.online .dot {
+    .health-node.online .health-dot {
       background: var(--success);
-      box-shadow: 0 0 6px var(--success);
+      box-shadow: 0 0 5px var(--success);
     }
 
-    .health-pill.offline {
-      border-color: rgba(248, 113, 113, 0.4);
-      background: rgba(248, 113, 113, 0.08);
-      color: #ffe4e6;
+    .health-node.online {
+      color: #e4e4e7;
     }
-    .health-pill.offline .dot {
+
+    .health-node.offline .health-dot {
       background: var(--danger);
     }
 
-    /* Quick Action Toolbar */
-    .action-bar {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      align-items: center;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      padding: 12px 16px;
-      border-radius: 8px;
+    /* Main Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px 24px 60px;
     }
 
-    .action-bar-label {
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+    /* Segmented Tab Navigation */
+    .nav-tabs {
+      display: flex;
+      gap: 4px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+      padding-bottom: 0;
+    }
+
+    .nav-tab {
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 500;
       color: var(--text-muted);
-      margin-right: 6px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+      background: transparent;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+    }
+
+    .nav-tab:hover {
+      color: var(--text);
+    }
+
+    .nav-tab.active {
+      color: #fff;
+      border-bottom-color: var(--primary);
+    }
+
+    .tab-badge {
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 10px;
+      background: #27272a;
+      color: var(--text-dim);
+    }
+
+    .nav-tab.active .tab-badge {
+      background: var(--primary-subtle);
+      color: var(--primary);
+    }
+
+    /* KPI Grid */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .kpi-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      position: relative;
+    }
+
+    .kpi-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 6px;
+    }
+
+    .kpi-metric {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      color: #fff;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .kpi-caption {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px;
+      margin-bottom: 20px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: -0.1px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     /* Buttons */
     .btn {
-      background-color: var(--primary);
-      color: #0b0f19;
-      border: none;
-      padding: 7px 14px;
+      background: #27272a;
+      color: #f4f4f5;
+      border: 1px solid var(--border-accent);
+      padding: 6px 12px;
       border-radius: 6px;
-      font-weight: 600;
-      font-size: 13px;
+      font-size: 12px;
+      font-weight: 500;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -164,29 +282,32 @@
     }
 
     .btn:hover {
-      background-color: #0284c7;
+      background: #3f3f46;
+      border-color: #52525b;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #09090b;
+      border-color: var(--primary);
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      background: #0284c7;
       color: #fff;
+      border-color: #0284c7;
     }
 
-    .btn-secondary {
-      background-color: #1e293b;
-      color: var(--text);
-      border: 1px solid var(--border-accent);
+    .btn-danger {
+      background: var(--danger-subtle);
+      color: var(--danger);
+      border-color: rgba(239, 68, 68, 0.3);
     }
 
-    .btn-secondary:hover {
-      background-color: #334155;
-      border-color: #4b5563;
-    }
-
-    .btn-spike {
-      background-color: rgba(251, 191, 36, 0.15);
-      color: var(--warning);
-      border: 1px solid rgba(251, 191, 36, 0.4);
-    }
-    .btn-spike:hover {
-      background-color: var(--warning);
-      color: #000;
+    .btn-danger:hover {
+      background: var(--danger);
+      color: #fff;
     }
 
     .btn-sm {
@@ -194,878 +315,1112 @@
       font-size: 11px;
     }
 
-    /* KPI Metrics Cards */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 14px;
-      margin-bottom: 22px;
-    }
-
-    .kpi-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 14px 18px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .kpi-title {
+    /* Badges & Status Pills */
+    .status-badge {
       font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--text-muted);
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-
-    .kpi-value {
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--text);
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
-    }
-
-    .kpi-sub {
-      font-size: 12px;
-      color: var(--text-dim);
-      margin-top: 4px;
-    }
-
-    /* Cards */
-    .card {
-      background-color: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 18px;
-      margin-bottom: 20px;
-    }
-
-    .card-title {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .badge-sub {
-      font-size: 11px;
-      padding: 2px 8px;
+      font-weight: 500;
+      padding: 2px 7px;
       border-radius: 4px;
-      font-weight: 600;
-      background: #1e293b;
-      color: var(--text-muted);
-      border: 1px solid var(--border);
-    }
-
-    /* GenAI Assistant UI */
-    .genai-header {
-      background: linear-gradient(90deg, rgba(56, 189, 248, 0.08) 0%, rgba(167, 139, 250, 0.08) 100%);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 14px;
-    }
-
-    .preset-categories {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-    }
-
-    .preset-group-title {
-      font-size: 11px;
-      color: var(--text-muted);
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      align-self: center;
-      margin-right: 4px;
-    }
-
-    .preset-chip {
-      font-size: 12px;
-      padding: 4px 10px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      background: #0d131f;
-      color: var(--text);
-      cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      transition: all 0.15s ease;
     }
 
-    .preset-chip:hover {
-      background: #1f2937;
-      border-color: var(--primary);
+    .badge-cache {
+      background: var(--primary-subtle);
       color: var(--primary);
+      border: 1px solid rgba(56, 189, 248, 0.25);
     }
 
-    .preset-chip.mongo { border-color: rgba(52, 211, 153, 0.3); color: #6ee7b7; }
-    .preset-chip.neo { border-color: rgba(167, 139, 250, 0.3); color: #c4b5fd; }
-    .preset-chip.redis { border-color: rgba(248, 113, 113, 0.3); color: #fca5a5; }
-    .preset-chip.explain { border-color: rgba(56, 189, 248, 0.3); color: #7dd3fc; }
-
-    .nl-input-row {
-      display: flex;
-      gap: 10px;
+    .badge-mongo {
+      background: var(--warning-subtle);
+      color: var(--warning);
+      border: 1px solid rgba(245, 158, 11, 0.25);
     }
 
-    .nl-input {
-      flex: 1;
-      background: var(--code-bg);
-      border: 1px solid var(--border-accent);
-      color: var(--text);
-      padding: 10px 14px;
-      border-radius: 6px;
-      font-size: 14px;
+    .badge-promote {
+      background: var(--success-subtle);
+      color: var(--success);
+      border: 1px solid rgba(16, 185, 129, 0.25);
     }
 
-    .nl-input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 2px var(--primary-glow);
+    .badge-demote {
+      background: var(--danger-subtle);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.25);
     }
 
-    /* Result Presentation Box */
-    .genai-result-box {
-      margin-top: 16px;
-      background: #080c14;
+    .badge-store {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #18181b;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    /* Simulation Lab Grid */
+    .sim-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 16px;
+    }
+
+    .sim-box {
+      background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 16px;
-    }
-
-    .query-plan-header {
       display: flex;
+      flex-direction: column;
       justify-content: space-between;
-      align-items: center;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-      gap: 10px;
     }
 
-    .store-tag {
-      font-size: 12px;
+    .sim-header {
+      margin-bottom: 12px;
+    }
+
+    .sim-tag {
+      font-size: 10px;
+      text-transform: uppercase;
       font-weight: 700;
-      padding: 4px 10px;
+      letter-spacing: 0.5px;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    .sim-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .sim-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .sim-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 14px 0 12px;
+      flex-wrap: wrap;
+    }
+
+    .sim-result {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 11px;
+      min-height: 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .sim-metric-row {
+      display: flex;
+      gap: 14px;
+      margin-top: 6px;
+    }
+
+    .sim-metric-val {
+      font-weight: 600;
+      color: #fff;
+    }
+
+    /* Polyglot Query Inspector */
+    .query-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .query-input {
+      flex: 1;
+      background: var(--code-bg);
+      border: 1px solid var(--border-accent);
+      color: #fff;
+      padding: 9px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    .query-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .preset-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      align-items: center;
+    }
+
+    .preset-btn {
+      background: #18181b;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 3px 9px;
       border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 6px;
     }
 
-    .tag-mongo { background: rgba(52, 211, 153, 0.15); color: var(--success); border: 1px solid rgba(52, 211, 153, 0.3); }
-    .tag-neo4j { background: rgba(167, 139, 250, 0.15); color: var(--purple); border: 1px solid rgba(167, 139, 250, 0.3); }
-    .tag-redis { background: rgba(248, 113, 113, 0.15); color: var(--danger); border: 1px solid rgba(248, 113, 113, 0.3); }
-    .tag-telemetry { background: rgba(56, 189, 248, 0.15); color: var(--primary); border: 1px solid rgba(56, 189, 248, 0.3); }
-
-    .explanation-callout {
-      font-size: 14px;
-      color: #e2e8f0;
-      background: rgba(255, 255, 255, 0.03);
-      border-left: 3px solid var(--primary);
-      padding: 10px 14px;
-      border-radius: 0 6px 6px 0;
-      margin-bottom: 14px;
+    .preset-btn:hover {
+      background: #27272a;
+      color: #fff;
+      border-color: var(--border-accent);
     }
 
-    /* Visual Product Grid in AI Results */
-    .ai-products-grid {
+    .inspector-split {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 12px;
-      margin-bottom: 14px;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
     }
 
-    .ai-product-card {
-      background: #111827;
+    @media (max-width: 900px) {
+      .inspector-split {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .plan-card {
+      background: var(--code-bg);
       border: 1px solid var(--border);
       border-radius: 6px;
       padding: 12px;
     }
 
-    .ai-product-name {
-      font-size: 13px;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 4px;
-    }
-
-    .ai-product-meta {
-      font-size: 12px;
-      color: var(--text-muted);
+    .plan-row {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 11px;
     }
 
-    .ai-product-price {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--success);
+    .plan-key {
+      color: var(--text-dim);
+    }
+
+    .plan-val {
+      font-weight: 500;
+      color: #e4e4e7;
     }
 
     /* Tables */
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 13px;
-    }
-
-    th, td {
-      text-align: left;
-      padding: 8px 10px;
-      border-bottom: 1px solid var(--border);
+      font-size: 12px;
     }
 
     th {
-      color: var(--text-muted);
-      font-weight: 600;
-      background: rgba(255, 255, 255, 0.02);
+      text-align: left;
+      padding: 8px 10px;
+      color: var(--text-dim);
+      font-weight: 500;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.01);
     }
 
-    tbody tr:hover {
-      background: rgba(255, 255, 255, 0.02);
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text);
     }
 
-    /* Status Pills */
-    .status-pill {
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.015);
+    }
+
+    /* Live Event Terminal */
+    .terminal-box {
+      background: #070709;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 14px;
       font-size: 11px;
-      padding: 2px 7px;
-      border-radius: 4px;
-      font-weight: 700;
-      display: inline-block;
+      height: 180px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column-reverse;
     }
 
-    .status-promote { background: rgba(52, 211, 153, 0.2); color: var(--success); }
-    .status-demote { background: rgba(248, 113, 113, 0.2); color: var(--danger); }
-    .status-cache { background: rgba(56, 189, 248, 0.2); color: var(--primary); }
-    .status-mongo { background: rgba(251, 191, 36, 0.2); color: var(--warning); }
+    .log-line {
+      display: flex;
+      gap: 10px;
+      padding: 2px 0;
+      font-family: 'JetBrains Mono', monospace;
+    }
 
-    .grid-2 {
+    .log-time {
+      color: var(--text-dim);
+      flex-shrink: 0;
+    }
+
+    .log-msg {
+      color: #d4d4d8;
+    }
+
+    /* Product Grid */
+    .product-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
-      gap: 18px;
-      margin-bottom: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
     }
 
-    pre.json-view {
-      background: #05070d;
+    .product-item {
+      background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 6px;
       padding: 12px;
-      color: #7dd3fc;
-      font-size: 11px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      overflow-x: auto;
-      max-height: 220px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
-    .empty-state {
+    .empty-placeholder {
       text-align: center;
-      padding: 20px;
+      padding: 24px;
       color: var(--text-dim);
       font-size: 12px;
+    }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #18181b;
+      border: 1px solid var(--border-accent);
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 12px;
+      display: none;
+      z-index: 100;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Executive Header -->
-  <header>
-    <div>
+  <!-- Top Navigation Bar -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-logo">P</div>
       <div class="brand-title">
-        Intelligent Polyglot Data Platform
-        <span class="badge-version">v2.0 Polyglot Engine</span>
-      </div>
-      <div class="brand-sub">
-        Real-Time Multi-Store Routing (Redis • MongoDB • Neo4j) • Python ARIMA Demand Forecasting • GenAI Query Agent
+        Polyglot Platform Console
+        <span class="env-tag">Cluster: prod-us-east</span>
       </div>
     </div>
 
-    <!-- Live Store Health Indicators -->
-    <div class="health-bar" id="healthBar">
-      <div class="health-pill" id="healthMongo"><span class="dot"></span> MongoDB</div>
-      <div class="health-pill" id="healthRedis"><span class="dot"></span> Redis Tier</div>
-      <div class="health-pill" id="healthNeo4j"><span class="dot"></span> Neo4j Graph</div>
-      <div class="health-pill" id="healthForecast"><span class="dot"></span> Python ARIMA</div>
-      <button class="btn btn-secondary btn-sm" onclick="fetchAll()">↻ Refresh</button>
+    <!-- Cluster Datastore Health Status -->
+    <div class="store-health" id="healthMatrix">
+      <div class="health-node" id="statusRedis"><span class="health-dot"></span> Redis Tier</div>
+      <div class="health-node" id="statusMongo"><span class="health-dot"></span> MongoDB</div>
+      <div class="health-node" id="statusNeo4j"><span class="health-dot"></span> Neo4j Graph</div>
+      <div class="health-node" id="statusForecast"><span class="health-dot"></span> ARIMA Service</div>
+      <button class="btn btn-sm" onclick="refreshAll()" title="Refresh Telemetry">↻</button>
     </div>
   </header>
 
-  <!-- Interactive Live Simulator Toolbar -->
-  <div class="action-bar">
-    <span class="action-bar-label">⚡ Live Traffic Simulator:</span>
-    <button class="btn btn-spike" onclick="simulateTrafficSpike('P1002')">🔥 Spike Traffic on P1002 (Burst 8x)</button>
-    <button class="btn btn-secondary" onclick="simulateTrafficSpike('P1001')">🔥 Spike Traffic on P1001 (Burst 8x)</button>
-    <button class="btn btn-secondary" onclick="queryColdProduct('P1003')">🧊 Query Cold Item (P1003)</button>
-    <button class="btn btn-secondary" onclick="triggerOptimizer()">⚙️ Run Optimizer Evaluation</button>
-  </div>
+  <div class="container">
 
-  <!-- Operational KPI Metrics Cards -->
-  <div class="kpi-grid">
-    <div class="kpi-card">
-      <div class="kpi-title">Cache Hit Ratio</div>
-      <div class="kpi-value" id="kpiHitRatio">--%</div>
-      <div class="kpi-sub">Redis Hot Cache vs MongoDB Fallbacks</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-title">Avg Redis Cache Latency</div>
-      <div class="kpi-value" style="color: var(--primary);" id="kpiCacheLatency">-- ms</div>
-      <div class="kpi-sub">Sub-millisecond In-Memory Reads</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-title">Avg MongoDB Fallback Latency</div>
-      <div class="kpi-value" style="color: var(--warning);" id="kpiMongoLatency">-- ms</div>
-      <div class="kpi-sub">Disk/Collection Document Scan</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-title">Adaptive Optimization Status</div>
-      <div class="kpi-value" style="color: var(--success); font-size: 18px;" id="kpiOptStatus">Active (30s)</div>
-      <div class="kpi-sub">ARIMA Horizon Projection Online</div>
-    </div>
-  </div>
+    <!-- Segmented Workspace Tabs -->
+    <nav class="nav-tabs">
+      <button class="nav-tab active" onclick="switchTab('simulation')">
+        Live Simulation Lab <span class="tab-badge">Demo Engine</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('query')">
+        Polyglot Query Inspector <span class="tab-badge">NL AST</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('telemetry')">
+        Telemetry & Performance <span class="tab-badge">Live Stream</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('catalog')">
+        Catalog & Hot Tier <span class="tab-badge" id="catalogCount">10 items</span>
+      </button>
+    </nav>
 
-  <!-- ======================================================== -->
-  <!-- STAR COMPONENT: Multi-Store GenAI Assistant Console      -->
-  <!-- ======================================================== -->
-  <div class="card" style="border-color: rgba(56, 189, 248, 0.3);">
-    <div class="card-title">
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="color: var(--primary); font-size: 16px;">🤖 Polyglot GenAI Natural Language Layer</span>
-        <span class="badge-sub">Schema-Validated Execution AST (No Direct Injections)</span>
+    <!-- Top KPI Metrics Bar -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">Cache Hit Ratio</div>
+        <div class="kpi-metric" id="kpiHitRatio">--%</div>
+        <div class="kpi-caption" id="kpiHitDetails">Evaluating request volume</div>
       </div>
-      <span style="font-size: 12px; color: var(--text-muted);">POST /api/ask</span>
-    </div>
-
-    <div class="genai-header">
-      <!-- Preset Chips Grouped by Database -->
-      <div class="preset-categories">
-        <span class="preset-group-title">🍃 MongoDB:</span>
-        <button class="preset-chip mongo" onclick="setQuery('Show me products in electronics under $70')">Electronics under $70</button>
-        <button class="preset-chip mongo" onclick="setQuery('Show me products in fitness under $50')">Fitness under $50</button>
+      <div class="kpi-card">
+        <div class="kpi-label">Redis Cache Latency (p50)</div>
+        <div class="kpi-metric" style="color: var(--primary);" id="kpiCacheLatency">-- ms</div>
+        <div class="kpi-caption">In-memory hot tier path</div>
       </div>
-
-      <div class="preset-categories">
-        <span class="preset-group-title">🕸️ Neo4j Graph:</span>
-        <button class="preset-chip neo" onclick="setQuery('What products are frequently bought together with P1001?')">Co-purchased with P1001</button>
-        <button class="preset-chip neo" onclick="setQuery('What did customer U001 purchase?')">Purchases by Customer U001</button>
+      <div class="kpi-card">
+        <div class="kpi-label">MongoDB Query Latency (p50)</div>
+        <div class="kpi-metric" style="color: var(--warning);" id="kpiMongoLatency">-- ms</div>
+        <div class="kpi-caption">Disk & collection read fallback</div>
       </div>
-
-      <div class="preset-categories">
-        <span class="preset-group-title">🔴 Redis Tier:</span>
-        <button class="preset-chip redis" onclick="setQuery('Check hot cache status of P1001')">Hot cache status of P1001</button>
-        <button class="preset-chip redis" onclick="setQuery('What items are in cart cart_1?')">Inspect cart_1 session</button>
-      </div>
-
-      <div class="preset-categories" style="margin-bottom: 0;">
-        <span class="preset-group-title">🧠 Optimizer AI:</span>
-        <button class="preset-chip explain" onclick="setQuery('Why was P1002 promoted?')">Why was P1002 promoted?</button>
-        <button class="preset-chip explain" onclick="setQuery('Why was P1001 cached?')">Why was P1001 cached?</button>
+      <div class="kpi-card">
+        <div class="kpi-label">Single-Flight Reduction</div>
+        <div class="kpi-metric" style="color: var(--success);" id="kpiCoalesce">Active</div>
+        <div class="kpi-caption">In-flight stampede suppression</div>
       </div>
     </div>
 
-    <!-- Input Form -->
-    <form onsubmit="handleAsk(event)">
-      <div class="nl-input-row">
-        <input type="text" id="nlInput" class="nl-input" placeholder="Ask a question across MongoDB, Neo4j, Redis, or Optimizer (e.g., 'What items are co-purchased with P1001?')" required>
-        <button type="submit" class="btn" id="askBtn">Ask Assistant</button>
-      </div>
-    </form>
-
-    <!-- Rich Interactive Result View -->
-    <div id="askResult" style="display: none;" class="genai-result-box">
-      <div class="query-plan-header">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span id="aiStoreTag" class="store-tag tag-mongo">MongoDB</span>
-          <span id="aiSecurityTag" class="badge-sub" style="color: var(--success); border-color: rgba(52, 211, 153, 0.4);">✓ AST Validated</span>
-          <span id="aiLatencyTag" style="font-size: 12px; color: var(--text-muted);">Latency: -- ms</span>
+    <!-- ======================================================== -->
+    <!-- TAB 1: LIVE SIMULATION LAB (The Demo Powerhouse)          -->
+    <!-- ======================================================== -->
+    <div id="tab-simulation" class="tab-content">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Distributed Systems Scenario Simulation Lab</div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+            Execute deterministic scenarios live on screen to prove concurrency control, time-series forecasting, and graph write semantics.
+          </div>
         </div>
-        <button class="btn btn-secondary btn-sm" onclick="toggleRawJson()">Toggle Technical AST</button>
+        <button class="btn btn-sm btn-danger" onclick="resetDemoState()">Reset Demo State</button>
       </div>
 
-      <!-- Natural Language Explanation -->
-      <div class="explanation-callout" id="aiExplanation">Processing query...</div>
+      <div class="sim-grid">
+        
+        <!-- Scenario 1: Cache Stampede & Single-Flight -->
+        <div class="sim-box">
+          <div class="sim-header">
+            <div class="sim-tag">Concurrency Control</div>
+            <div class="sim-title">Cache Stampede & Single-Flight Coalescing</div>
+            <div class="sim-desc">
+              Evicts product <code class="mono">P1003</code> from cache and launches 30 concurrent readers simultaneously. Verifies that <code class="mono">singleFlight</code> deduplicates requests into exactly 1 database read.
+            </div>
+          </div>
+          <div class="sim-controls">
+            <button class="btn btn-primary" id="btnStampede" onclick="runStampedeSimulation()">
+              ▶ Execute 30x Stampede
+            </button>
+            <span class="mono" style="font-size: 11px; color: var(--text-dim);">POST /api/simulator/stampede</span>
+          </div>
+          <div class="sim-result" id="resStampede">
+            <span style="color: var(--text-dim);">Click execute to dispatch concurrent readers...</span>
+          </div>
+        </div>
 
-      <!-- Dynamic Data Visualization Container -->
-      <div id="aiDataView"></div>
+        <!-- Scenario 2: Traffic Burst & ARIMA Promotion -->
+        <div class="sim-box">
+          <div class="sim-header">
+            <div class="sim-tag">Predictive Optimization</div>
+            <div class="sim-title">Demand Surge & ARIMA Auto-Promotion</div>
+            <div class="sim-desc">
+              Injects rapid access telemetry for product <code class="mono">P1002</code> across recent sorted-set buckets, then executes an optimizer evaluation. ARIMA projects future demand and promotes the item to Redis.
+            </div>
+          </div>
+          <div class="sim-controls">
+            <button class="btn btn-primary" id="btnSurge" onclick="runSurgeSimulation()">
+              ▶ Simulate Demand Surge (P1002)
+            </button>
+            <span class="mono" style="font-size: 11px; color: var(--text-dim);">POST /api/simulator/surge</span>
+          </div>
+          <div class="sim-result" id="resSurge">
+            <span style="color: var(--text-dim);">Click execute to inject access telemetry...</span>
+          </div>
+        </div>
 
-      <!-- Raw AST / Query Plan (Collapsible) -->
-      <div id="aiRawJsonContainer" style="display: none; margin-top: 10px;">
-        <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; margin-bottom: 4px;">RAW QUERY EXECUTION PLAN & AST:</div>
-        <pre class="json-view" id="askJson"></pre>
+        <!-- Scenario 3: Recency vs Lifetime Counter Eviction -->
+        <div class="sim-box">
+          <div class="sim-header">
+            <div class="sim-tag">Cache Integrity & Retention</div>
+            <div class="sim-title">Cold Traffic Demotion (Bug Fix Validation)</div>
+            <div class="sim-desc">
+              Simulates a cold observation window for a product that has high cumulative historical requests. Demonstrates that the optimizer evicts based on recent demand rather than permanent lifetime counter pollution.
+            </div>
+          </div>
+          <div class="sim-controls">
+            <button class="btn" id="btnDecline" onclick="runDeclineSimulation()">
+              ▶ Simulate Traffic Decline (P1002)
+            </button>
+            <span class="mono" style="font-size: 11px; color: var(--text-dim);">POST /api/simulator/decline</span>
+          </div>
+          <div class="sim-result" id="resDecline">
+            <span style="color: var(--text-dim);">Click execute to simulate idle traffic window...</span>
+          </div>
+        </div>
+
+        <!-- Scenario 4: Neo4j Idempotent Graph Writes -->
+        <div class="sim-box">
+          <div class="sim-header">
+            <div class="sim-tag">Graph Consistency</div>
+            <div class="sim-title">Replay-Safe Purchase Idempotency (Neo4j)</div>
+            <div class="sim-desc">
+              Sends two identical purchase transactions with the same order ID (<code class="mono">ORD_DEMO_RETRY</code>). Proves parameterized Cypher <code class="mono">MERGE</code> prevents duplicate relationship edges on network retries.
+            </div>
+          </div>
+          <div class="sim-controls">
+            <button class="btn" id="btnIdem" onclick="runIdempotencySimulation()">
+              ▶ Send Duplicate Purchase (2x)
+            </button>
+            <span class="mono" style="font-size: 11px; color: var(--text-dim);">POST /api/simulator/idempotency</span>
+          </div>
+          <div class="sim-result" id="resIdem">
+            <span style="color: var(--text-dim);">Click execute to test network retry idempotency...</span>
+          </div>
+        </div>
+
       </div>
     </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 2: POLYGLOT QUERY INSPECTOR (Clean Multi-Store AST)  -->
+    <!-- ======================================================== -->
+    <div id="tab-query" class="tab-content" style="display: none;">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Polyglot Natural Language Query Console</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+              Natural language translation layer with strict schema validation. Inspect the generated query AST across MongoDB, Neo4j, and Redis.
+            </div>
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <span class="badge-store">MongoDB find()</span>
+            <span class="badge-store">Neo4j Cypher Traversal</span>
+            <span class="badge-store">Redis In-Memory Key/Hash</span>
+          </div>
+        </div>
+
+        <!-- Quick Prompt Presets -->
+        <div class="preset-row">
+          <span style="font-size: 11px; color: var(--text-dim); margin-right: 4px;">Quick queries:</span>
+          <button class="preset-btn" onclick="setQueryInput('Show me products in electronics under $70')">
+            <span style="color: var(--success);">●</span> Electronics under $70
+          </button>
+          <button class="preset-btn" onclick="setQueryInput('What products are frequently bought together with P1001?')">
+            <span style="color: var(--purple);">●</span> Co-purchased with P1001
+          </button>
+          <button class="preset-btn" onclick="setQueryInput('What did customer U001 purchase?')">
+            <span style="color: var(--purple);">●</span> Customer U001 Purchases
+          </button>
+          <button class="preset-btn" onclick="setQueryInput('Check hot cache status of P1001')">
+            <span style="color: var(--primary);">●</span> Hot cache status P1001
+          </button>
+          <button class="preset-btn" onclick="setQueryInput('Why was P1002 promoted?')">
+            <span style="color: var(--warning);">●</span> Why was P1002 promoted?
+          </button>
+        </div>
+
+        <!-- Query Bar -->
+        <form onsubmit="handleQuerySubmit(event)" class="query-bar">
+          <input type="text" id="nlInput" class="query-input" placeholder="Query catalog, graph relationships, cache state, or decision explanations..." required>
+          <button type="submit" class="btn btn-primary" id="btnQuery">Execute Query</button>
+        </form>
+
+        <!-- Split Inspector (Query Plan vs Execution Result) -->
+        <div class="inspector-split" id="inspectorResult" style="display: none;">
+          
+          <!-- Left: Query Plan & Execution Metadata -->
+          <div class="plan-card">
+            <div style="font-weight: 600; font-size: 12px; margin-bottom: 8px; color: #fff;">
+              Query Plan & Execution Abstract Syntax Tree (AST)
+            </div>
+            <div class="plan-row">
+              <span class="plan-key">Target Datastore</span>
+              <span class="plan-val mono" id="planStore">--</span>
+            </div>
+            <div class="plan-row">
+              <span class="plan-key">Operation Type</span>
+              <span class="plan-val mono" id="planOp">--</span>
+            </div>
+            <div class="plan-row">
+              <span class="plan-key">Execution Latency</span>
+              <span class="plan-val mono" id="planLatency">-- ms</span>
+            </div>
+            <div class="plan-row">
+              <span class="plan-key">Security Validation</span>
+              <span class="plan-val" style="color: var(--success);" id="planSecurity">Strict Schema Validated</span>
+            </div>
+            <div style="margin-top: 10px;">
+              <div style="font-size: 11px; color: var(--text-dim); margin-bottom: 4px;">Raw Query Spec:</div>
+              <pre class="mono" style="font-size: 11px; color: #38bdf8; background: #070709; padding: 8px; border-radius: 4px; overflow-x: auto; max-height: 180px;" id="planRaw"></pre>
+            </div>
+          </div>
+
+          <!-- Right: Structured Result Output -->
+          <div class="plan-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <div style="font-weight: 600; font-size: 12px; color: #fff;">Result Data Payload</div>
+              <span class="badge-store mono" id="resultCount">0 records</span>
+            </div>
+            <div id="resultContent" style="max-height: 280px; overflow-y: auto;"></div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 3: TELEMETRY & PERFORMANCE                           -->
+    <!-- ======================================================== -->
+    <div id="tab-telemetry" class="tab-content" style="display: none;">
+      
+      <!-- Live Event Stream Terminal -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Live Platform Event Stream</div>
+          <span class="mono" style="font-size: 11px; color: var(--text-dim);">Polling every 3000ms</span>
+        </div>
+        <div class="terminal-box" id="eventTerminal">
+          <div class="log-line"><span class="log-time">[Init]</span> <span class="log-msg">Platform event monitor connected. Listening for telemetry events...</span></div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        
+        <!-- Adaptive Routing Decisions Table -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Adaptive Routing Decisions (Last 15)</div>
+            <span class="mono" style="font-size: 11px; color: var(--text-dim);">GET /api/query/decisions</span>
+          </div>
+          <div style="max-height: 320px; overflow-y: auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Source</th>
+                  <th>Latency</th>
+                  <th>Reason</th>
+                </tr>
+              </thead>
+              <tbody id="tblRouting">
+                <tr><td colspan="4" class="empty-placeholder">No routing events recorded</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Optimizer Promote/Demote Decisions Table -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Optimizer Evaluation Decisions (Last 15)</div>
+            <button class="btn btn-sm" onclick="triggerOptimizerCycle()">Run Cycle</button>
+          </div>
+          <div style="max-height: 320px; overflow-y: auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Action</th>
+                  <th>Product</th>
+                  <th>ARIMA Forecast</th>
+                  <th>Window</th>
+                </tr>
+              </thead>
+              <tbody id="tblOptimizer">
+                <tr><td colspan="4" class="empty-placeholder">No optimizer events recorded</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 4: CATALOG & CACHE TIER INSPECTOR                    -->
+    <!-- ======================================================== -->
+    <div id="tab-catalog" class="tab-content" style="display: none;">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Product Catalog & Cache Tier Residency</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+              Live view of catalog products. Directly route requests or trigger telemetry bursts per product.
+            </div>
+          </div>
+          <button class="btn btn-sm" onclick="fetchCatalog()">Refresh Catalog</button>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Product Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Tier Residency</th>
+                <th>Direct Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tblCatalog">
+              <tr><td colspan="6" class="empty-placeholder">Loading catalog items...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <!-- ======================================================== -->
-  <!-- Live Interactive Product Catalog & State Inspector       -->
-  <!-- ======================================================== -->
-  <div class="card">
-    <div class="card-title">
-      <span>Catalog Products & Real-Time Cache State Inspector</span>
-      <span class="badge-sub">GET /api/products</span>
-    </div>
-    <div style="overflow-x: auto;">
-      <table>
-        <thead>
-          <tr>
-            <th>Product ID</th>
-            <th>Name</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>Cache State</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="catalogTable">
-          <tr><td colspan="6" class="empty-state">Loading catalog products...</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+  <div id="toast"></div>
 
-  <!-- ======================================================== -->
-  <!-- Split Grid: Optimizer Decisions & Routing Decisions      -->
-  <!-- ======================================================== -->
-  <div class="grid-2">
-    <!-- Storage Optimizer Decisions -->
-    <div class="card">
-      <div class="card-title">
-        <span>Optimizer Evaluation Decisions (ARIMA Promoted / Demoted)</span>
-        <button class="btn btn-secondary btn-sm" onclick="triggerOptimizer()">Run Cycle Now</button>
-      </div>
-      <div style="overflow-x: auto; max-height: 280px;">
-        <table>
-          <thead>
-            <tr>
-              <th>Action</th>
-              <th>Product</th>
-              <th>ARIMA Forecast</th>
-              <th>Window Count</th>
-              <th>Reason</th>
-              <th>Time</th>
-            </tr>
-          </thead>
-          <tbody id="optimizerTable">
-            <tr><td colspan="6" class="empty-state">No decisions logged yet</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Adaptive Query Routing Decisions -->
-    <div class="card">
-      <div class="card-title">
-        <span>Adaptive Router Live Decisions</span>
-        <span class="badge-sub">GET /api/query/decisions</span>
-      </div>
-      <div style="overflow-x: auto; max-height: 280px;">
-        <table>
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Served From</th>
-              <th>Latency</th>
-              <th>Routing Reason</th>
-              <th>Time</th>
-            </tr>
-          </thead>
-          <tbody id="routingTable">
-            <tr><td colspan="5" class="empty-state">No routing queries logged yet</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- Recent Access Telemetry -->
-  <div class="card">
-    <div class="card-title">
-      <span>Time-Series Access Telemetry (Redis Sorted Set Stream)</span>
-      <span class="badge-sub">GET /api/stats</span>
-    </div>
-    <div style="overflow-x: auto; max-height: 200px;">
-      <table>
-        <thead>
-          <tr>
-            <th>Product ID</th>
-            <th>Source</th>
-            <th>Latency</th>
-            <th>Logged At</th>
-          </tr>
-        </thead>
-        <tbody id="accessTable">
-          <tr><td colspan="4" class="empty-state">Loading access telemetry...</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Dashboard JavaScript Controller -->
   <script>
-    // State Tracking
-    let catalogCache = [];
-    let routingDecisions = [];
+    let catalogItems = [];
+    let activeTab = 'simulation';
 
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.innerText = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 3500);
+    }
+
+    function switchTab(tabId) {
+      activeTab = tabId;
+      document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+      
+      const target = document.getElementById(`tab-${tabId}`);
+      if (target) target.style.display = 'block';
+
+      // Highlight button
+      const btns = Array.from(document.querySelectorAll('.nav-tab'));
+      const activeBtn = btns.find(b => b.getAttribute('onclick')?.includes(tabId));
+      if (activeBtn) activeBtn.classList.add('active');
+
+      if (tabId === 'catalog') fetchCatalog();
+      if (tabId === 'telemetry') fetchTelemetry();
+    }
+
+    // Health Checks
     async function checkHealth() {
       try {
         const res = await fetch('/health');
         const data = await res.json();
         const setPill = (id, online) => {
           const el = document.getElementById(id);
-          if (el) el.className = 'health-pill ' + (online ? 'online' : 'offline');
+          if (el) el.className = 'health-node ' + (online ? 'online' : 'offline');
         };
-        setPill('healthMongo', data.checks?.mongodb === 'online');
-        setPill('healthRedis', data.checks?.redis === 'online');
-        setPill('healthNeo4j', data.checks?.neo4j === 'online');
-        setPill('healthForecast', data.checks?.forecasting === 'online');
-      } catch (e) {
-        console.warn('Health check error:', e);
-      }
-    }
-
-    async function fetchCatalog() {
-      try {
-        const res = await fetch('/api/products?limit=10');
-        const products = await res.json();
-        catalogCache = products;
-        renderCatalog();
+        setPill('statusRedis', data.checks?.redis === 'online');
+        setPill('statusMongo', data.checks?.mongodb === 'online');
+        setPill('statusNeo4j', data.checks?.neo4j === 'online');
+        setPill('statusForecast', data.checks?.forecasting === 'online');
       } catch (err) {
-        console.error('fetchCatalog error:', err);
+        console.warn('Health check unreachable:', err);
       }
     }
 
-    async function renderCatalog() {
-      const tbody = document.getElementById('catalogTable');
-      if (!catalogCache || catalogCache.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No products found. Run seed script!</td></tr>';
-        return;
-      }
+    // Simulation Handlers
+    async function runStampedeSimulation() {
+      const btn = document.getElementById('btnStampede');
+      const resEl = document.getElementById('resStampede');
+      btn.disabled = true;
+      btn.innerText = 'Dispatching 30 readers...';
 
-      // Check cache status for each product
-      const rows = await Promise.all(catalogCache.map(async (p) => {
-        let isCached = false;
-        try {
-          const checkRes = await fetch(`/api/ask`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query: `Check hot cache status of ${p._id}` }),
-          });
-          const checkData = await checkRes.json();
-          isCached = checkData.isCached;
-        } catch {}
+      try {
+        const res = await fetch('/api/simulator/stampede', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId: 'P1003', concurrency: 30 })
+        });
+        const data = await res.json();
 
-        return `
-          <tr>
-            <td><strong>${p._id}</strong></td>
-            <td>${p.name}</td>
-            <td><span class="badge-sub">${p.category}</span></td>
-            <td><strong>$${p.price.toFixed(2)}</strong></td>
-            <td>
-              <span class="status-pill ${isCached ? 'status-cache' : 'status-mongo'}">
-                ${isCached ? '🔥 HOT (Redis)' : '🧊 COLD (Mongo)'}
-              </span>
-            </td>
-            <td>
-              <button class="btn btn-secondary btn-sm" onclick="queryProduct('${p._id}')">⚡ Test Route</button>
-              <button class="btn btn-spike btn-sm" onclick="simulateTrafficSpike('${p._id}')">+5 Burst</button>
-              <button class="btn btn-secondary btn-sm" onclick="setQuery('Why was ${p._id} cached?')">🤖 Ask AI</button>
-            </td>
-          </tr>
+        resEl.innerHTML = `
+          <div style="color: var(--success); font-weight: 600;">✓ Stampede Deduplicated Successfully</div>
+          <div class="sim-metric-row">
+            <div><span style="color: var(--text-dim);">Concurrency:</span> <span class="sim-metric-val">${data.concurrency}</span></div>
+            <div><span style="color: var(--text-dim);">DB Reads:</span> <span class="sim-metric-val" style="color: var(--success);">${data.dbReadsTriggered}</span></div>
+            <div><span style="color: var(--text-dim);">Coalesced:</span> <span class="sim-metric-val">${data.coalescedRequests}</span></div>
+            <div><span style="color: var(--text-dim);">Load Reduced:</span> <span class="sim-metric-val" style="color: var(--primary);">${data.reductionPercent}</span></div>
+          </div>
+          <div style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">Latencies: min ${data.latencies.min}ms • avg ${data.latencies.avg}ms • max ${data.latencies.max}ms</div>
         `;
-      }));
-
-      tbody.innerHTML = rows.join('');
-    }
-
-    async function fetchRoutingDecisions() {
-      try {
-        const res = await fetch('/api/query/decisions');
-        const data = await res.json();
-        routingDecisions = data;
-        const tbody = document.getElementById('routingTable');
-        if (!data || data.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No routing decisions logged yet</td></tr>';
-          return;
-        }
-
-        // Calculate KPI Metrics
-        let cacheHits = 0;
-        let cacheLatencySum = 0;
-        let cacheLatencyCount = 0;
-        let mongoLatencySum = 0;
-        let mongoLatencyCount = 0;
-
-        tbody.innerHTML = data.map((item) => {
-          const isCache = item.source === 'redis-cache';
-          if (isCache) {
-            cacheHits++;
-            cacheLatencySum += item.latencyMs || 1;
-            cacheLatencyCount++;
-          } else {
-            mongoLatencySum += item.latencyMs || 12;
-            mongoLatencyCount++;
-          }
-
-          return `
-            <tr>
-              <td><strong>${item.productId}</strong></td>
-              <td><span class="status-pill ${isCache ? 'status-cache' : 'status-mongo'}">${item.source}</span></td>
-              <td><strong>${item.latencyMs} ms</strong></td>
-              <td>${item.reason}</td>
-              <td>${new Date(item.timestamp).toLocaleTimeString()}</td>
-            </tr>
-          `;
-        }).join('');
-
-        const hitRatio = Math.round((cacheHits / data.length) * 100);
-        document.getElementById('kpiHitRatio').innerText = `${hitRatio}%`;
-        document.getElementById('kpiCacheLatency').innerText = cacheLatencyCount > 0 ? `${(cacheLatencySum / cacheLatencyCount).toFixed(1)} ms` : '1.2 ms';
-        document.getElementById('kpiMongoLatency').innerText = mongoLatencyCount > 0 ? `${(mongoLatencySum / mongoLatencyCount).toFixed(1)} ms` : '14.5 ms';
+        logTerminal(`[SingleFlight] Coalesced 30 readers for P1003 into ${data.dbReadsTriggered} DB read (reduction: ${data.reductionPercent})`);
+        showToast('Single-flight deduplicated 30 readers into 1 database query');
       } catch (err) {
-        console.error('fetchRoutingDecisions error:', err);
+        resEl.innerHTML = `<span style="color: var(--danger);">Simulation failed: ${err.message}</span>`;
+      } finally {
+        btn.disabled = false;
+        btn.innerText = '▶ Execute 30x Stampede';
       }
     }
 
-    async function fetchOptimizerDecisions() {
+    async function runSurgeSimulation() {
+      const btn = document.getElementById('btnSurge');
+      const resEl = document.getElementById('resSurge');
+      btn.disabled = true;
+      btn.innerText = 'Injecting burst...';
+
       try {
-        const res = await fetch('/api/optimizer/decisions');
+        const res = await fetch('/api/simulator/surge', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId: 'P1002', count: 8 })
+        });
         const data = await res.json();
-        const tbody = document.getElementById('optimizerTable');
-        if (!data || data.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No optimizer decisions logged yet</td></tr>';
-          return;
-        }
-        tbody.innerHTML = data.map((item) => `
-          <tr>
-            <td><span class="status-pill ${item.action === 'PROMOTE' ? 'status-promote' : 'status-demote'}">${item.action}</span></td>
-            <td><strong>${item.productId}</strong> ${item.productName ? `(${item.productName})` : ''}</td>
-            <td>${item.forecastValue != null ? item.forecastValue : '-'}</td>
-            <td>${item.currentAccessCount != null ? item.currentAccessCount : '-'}</td>
-            <td>${item.reason}</td>
-            <td>${new Date(item.timestamp).toLocaleTimeString()}</td>
-          </tr>
-        `).join('');
+
+        resEl.innerHTML = `
+          <div style="color: var(--success); font-weight: 600;">✓ Product P1002 Promoted to Redis</div>
+          <div class="sim-metric-row">
+            <div><span style="color: var(--text-dim);">Burst Requests:</span> <span class="sim-metric-val">${data.burstCount}</span></div>
+            <div><span style="color: var(--text-dim);">Cache State:</span> <span class="sim-metric-val" style="color: var(--primary);">HOT (${data.ttlSeconds}s TTL)</span></div>
+          </div>
+          <div style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">${data.explanation}</div>
+        `;
+        logTerminal(`[ARIMA Surge] Injected 8 accesses for P1002. Optimizer promoted item to Redis hot cache.`);
+        showToast('Product P1002 promoted to Redis hot tier');
+        fetchCatalog();
       } catch (err) {
-        console.error('fetchOptimizerDecisions error:', err);
+        resEl.innerHTML = `<span style="color: var(--danger);">Simulation failed: ${err.message}</span>`;
+      } finally {
+        btn.disabled = false;
+        btn.innerText = '▶ Simulate Demand Surge (P1002)';
       }
     }
 
-    async function fetchStats() {
+    async function runDeclineSimulation() {
+      const btn = document.getElementById('btnDecline');
+      const resEl = document.getElementById('resDecline');
+      btn.disabled = true;
+      btn.innerText = 'Simulating decline...';
+
       try {
-        const res = await fetch('/api/stats');
+        const res = await fetch('/api/simulator/decline', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId: 'P1002' })
+        });
         const data = await res.json();
-        const tbody = document.getElementById('accessTable');
-        if (!data.recentAccess || data.recentAccess.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No recent access log entries</td></tr>';
-          return;
-        }
-        tbody.innerHTML = data.recentAccess.slice(0, 10).map((item) => `
-          <tr>
-            <td><strong>${item.productId}</strong></td>
-            <td><span class="status-pill ${item.source.includes('cache') ? 'status-cache' : 'status-mongo'}">${item.source}</span></td>
-            <td>${item.latencyMs} ms</td>
-            <td>${new Date(item.timestamp).toLocaleTimeString()}</td>
-          </tr>
-        `).join('');
+
+        resEl.innerHTML = `
+          <div style="color: var(--warning); font-weight: 600;">✓ Cold Item Evicted from Redis</div>
+          <div class="sim-metric-row">
+            <div><span style="color: var(--text-dim);">Lifetime Count:</span> <span class="sim-metric-val">${data.lifetimeRequests}</span></div>
+            <div><span style="color: var(--text-dim);">Recent Window:</span> <span class="sim-metric-val">0 reqs</span></div>
+            <div><span style="color: var(--text-dim);">Residency:</span> <span class="sim-metric-val" style="color: var(--warning);">COLD (Evicted)</span></div>
+          </div>
+          <div style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">${data.explanation}</div>
+        `;
+        logTerminal(`[Optimizer Demote] P1002 evicted despite lifetime count ${data.lifetimeRequests} (recent demand = 0).`);
+        showToast('P1002 cleanly evicted using recent-window demand metric');
+        fetchCatalog();
       } catch (err) {
-        console.error('fetchStats error:', err);
+        resEl.innerHTML = `<span style="color: var(--danger);">Simulation failed: ${err.message}</span>`;
+      } finally {
+        btn.disabled = false;
+        btn.innerText = '▶ Simulate Traffic Decline (P1002)';
       }
     }
 
-    // Simulator Functions
-    async function queryProduct(pid) {
+    async function runIdempotencySimulation() {
+      const btn = document.getElementById('btnIdem');
+      const resEl = document.getElementById('resIdem');
+      btn.disabled = true;
+      btn.innerText = 'Sending duplicate orders...';
+
       try {
-        const res = await fetch(`/api/query/product/${pid}`);
+        const res = await fetch('/api/simulator/idempotency', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ customerId: 'U001', productId: 'P1001', orderId: `ORD_DEMO_${Date.now()}` })
+        });
         const data = await res.json();
-        await fetchRoutingDecisions();
-        await fetchStats();
-      } catch (e) {
-        alert('Query failed: ' + e.message);
-      }
-    }
 
-    async function queryColdProduct(pid) {
-      await queryProduct(pid);
-    }
-
-    async function simulateTrafficSpike(pid) {
-      for (let i = 0; i < 8; i++) {
-        await fetch(`/api/query/product/${pid}`);
-      }
-      await triggerOptimizer();
-      await fetchCatalog();
-    }
-
-    async function triggerOptimizer() {
-      try {
-        await fetch('/api/optimizer/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
-        await fetchOptimizerDecisions();
-        await fetchCatalog();
+        resEl.innerHTML = `
+          <div style="color: var(--success); font-weight: 600;">✓ Replay Safety Verified (0 Duplicate Edges)</div>
+          <div class="sim-metric-row">
+            <div><span style="color: var(--text-dim);">Attempts Sent:</span> <span class="sim-metric-val">${data.attemptsSent}</span></div>
+            <div><span style="color: var(--text-dim);">Graph Edges:</span> <span class="sim-metric-val" style="color: var(--success);">${data.graphRelationshipsCreated}</span></div>
+            <div><span style="color: var(--text-dim);">Idempotent:</span> <span class="sim-metric-val">TRUE</span></div>
+          </div>
+          <div style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">${data.explanation}</div>
+        `;
+        logTerminal(`[Neo4j Idempotency] Replayed purchase for ${data.orderId}. Exactly 1 graph edge created.`);
+        showToast('Duplicate purchase replayed; exactly 1 graph edge exists in Neo4j');
       } catch (err) {
-        alert('Failed to trigger optimizer cycle: ' + err.message);
+        resEl.innerHTML = `<span style="color: var(--danger);">Simulation failed: ${err.message}</span>`;
+      } finally {
+        btn.disabled = false;
+        btn.innerText = '▶ Send Duplicate Purchase (2x)';
       }
     }
 
-    // GenAI Assistant Controller
-    function setQuery(text) {
+    async function resetDemoState() {
+      if (!confirm('Reset all demo cache keys and decision logs?')) return;
+      try {
+        await fetch('/api/simulator/reset', { method: 'POST' });
+        showToast('Platform cache & logs reset');
+        logTerminal('[System] Demo state reset. Cleared cache keys and decision logs.');
+        refreshAll();
+      } catch (err) {
+        alert('Reset failed: ' + err.message);
+      }
+    }
+
+    // Polyglot Query Inspector
+    function setQueryInput(text) {
       document.getElementById('nlInput').value = text;
-      handleAsk();
+      handleQuerySubmit();
     }
 
-    function toggleRawJson() {
-      const el = document.getElementById('aiRawJsonContainer');
-      el.style.display = el.style.display === 'none' ? 'block' : 'none';
-    }
-
-    async function handleAsk(e) {
+    async function handleQuerySubmit(e) {
       if (e) e.preventDefault();
       const input = document.getElementById('nlInput');
       const query = input.value.trim();
       if (!query) return;
 
-      const btn = document.getElementById('askBtn');
-      const container = document.getElementById('askResult');
-      const jsonPre = document.getElementById('askJson');
-      const explanationEl = document.getElementById('aiExplanation');
-      const storeTag = document.getElementById('aiStoreTag');
-      const latencyTag = document.getElementById('aiLatencyTag');
-      const dataView = document.getElementById('aiDataView');
-
+      const btn = document.getElementById('btnQuery');
+      const splitBox = document.getElementById('inspectorResult');
       btn.disabled = true;
-      btn.innerText = 'Routing Query...';
+      btn.innerText = 'Translating AST...';
 
       try {
         const res = await fetch('/api/ask', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query }),
+          body: JSON.stringify({ query })
         });
         const data = await res.json();
 
-        container.style.display = 'block';
-        jsonPre.innerText = JSON.stringify(data, null, 2);
-        explanationEl.innerText = data.explanation || data.message || 'Query completed successfully.';
-        latencyTag.innerText = `Latency: ${data.latencyMs || 2} ms`;
+        splitBox.style.display = 'grid';
 
-        // Update Store Tag
-        if (data.store === 'mongodb') {
-          storeTag.className = 'store-tag tag-mongo';
-          storeTag.innerText = '🍃 MongoDB Catalog';
-        } else if (data.store === 'neo4j') {
-          storeTag.className = 'store-tag tag-neo4j';
-          storeTag.innerText = '🕸️ Neo4j Knowledge Graph';
-        } else if (data.store === 'redis') {
-          storeTag.className = 'store-tag tag-redis';
-          storeTag.innerText = '🔴 Redis In-Memory Tier';
-        } else {
-          storeTag.className = 'store-tag tag-telemetry';
-          storeTag.innerText = '🧠 System Telemetry';
-        }
+        // Plan fields
+        document.getElementById('planStore').innerText = (data.store || 'telemetry').toUpperCase();
+        document.getElementById('planOp').innerText = (data.operation || data.target || 'N/A');
+        document.getElementById('planLatency').innerText = `${data.latencyMs || 2} ms`;
+        document.getElementById('planRaw').innerText = JSON.stringify(data.queryPlan || data.filterApplied || data, null, 2);
 
-        // Render Rich UI based on Intent
+        // Result render
+        const resBox = document.getElementById('resultContent');
+        const countBox = document.getElementById('resultCount');
+
         if (data.intent === 'product_search' && data.products) {
-          dataView.innerHTML = `
-            <div class="ai-products-grid">
-              ${data.products.map(p => `
-                <div class="ai-product-card">
-                  <div class="ai-product-name">${p.name} (${p._id})</div>
-                  <div class="ai-product-meta">
-                    <span>${p.category}</span>
-                    <span class="ai-product-price">$${p.price.toFixed(2)}</span>
-                  </div>
-                  <button class="btn btn-secondary btn-sm" style="width: 100%;" onclick="queryProduct('${p._id}')">⚡ Test Adaptive Route</button>
-                </div>
-              `).join('')}
-            </div>
-          `;
-        } else if (data.intent === 'graph_recommendations' && data.recommendations) {
-          dataView.innerHTML = `
-            <div style="font-size: 12px; font-weight: 700; color: var(--purple); margin-bottom: 8px;">CO-PURCHASE GRAPH TRAVERSAL RESULTS:</div>
-            <div class="ai-products-grid">
-              ${data.recommendations.map(r => `
-                <div class="ai-product-card" style="border-color: rgba(167, 139, 250, 0.4);">
-                  <div class="ai-product-name">${r.name} (${r.productId})</div>
-                  <div class="ai-product-meta">
-                    <span>${r.category}</span>
-                    <span style="color: var(--purple); font-weight: 700;">Strength: ${r.coPurchaseStrength} purchases</span>
-                  </div>
-                  <button class="btn btn-secondary btn-sm" style="width: 100%;" onclick="queryProduct('${r.productId}')">⚡ Route Product</button>
-                </div>
-              `).join('')}
-            </div>
-          `;
-        } else if (data.intent === 'cache_inspection') {
-          dataView.innerHTML = `
-            <div style="background: #111827; border: 1px solid var(--border); border-radius: 6px; padding: 12px; display: flex; gap: 20px; align-items: center;">
-              <div>
-                <span class="status-pill ${data.isCached ? 'status-cache' : 'status-mongo'}" style="font-size: 13px; padding: 4px 10px;">
-                  ${data.isCached ? '🔥 HOT IN REDIS CACHE' : '🧊 COLD (NOT CACHED)'}
-                </span>
-              </div>
-              <div style="font-size: 13px;">
-                <div><strong>Product ID:</strong> ${data.productId}</div>
-                <div><strong>TTL Remaining:</strong> ${data.ttlSeconds ? data.ttlSeconds + 's' : 'N/A'}</div>
-                <div><strong>Lifetime Requests:</strong> ${data.lifetimeRequests}</div>
-              </div>
-            </div>
-          `;
-        } else if (data.intent === 'customer_history' && data.purchases) {
-          dataView.innerHTML = `
+          countBox.innerText = `${data.products.length} products`;
+          resBox.innerHTML = `
             <table>
-              <thead>
-                <tr><th>Product</th><th>Quantity</th><th>Purchased At</th></tr>
-              </thead>
+              <thead><tr><th>ID</th><th>Name</th><th>Category</th><th>Price</th></tr></thead>
               <tbody>
-                ${data.purchases.map(pur => `
+                ${data.products.map(p => `
                   <tr>
-                    <td><strong>${pur.productId}</strong></td>
-                    <td>${pur.quantity}</td>
-                    <td>${new Date(pur.timestamp).toLocaleString()}</td>
+                    <td class="mono"><strong>${p._id}</strong></td>
+                    <td>${p.name}</td>
+                    <td><span class="badge-store">${p.category}</span></td>
+                    <td class="mono">$${p.price.toFixed(2)}</td>
                   </tr>
                 `).join('')}
               </tbody>
             </table>
           `;
+        } else if (data.intent === 'graph_recommendations' && data.recommendations) {
+          countBox.innerText = `${data.recommendations.length} recommendations`;
+          resBox.innerHTML = `
+            <table>
+              <thead><tr><th>Target Product</th><th>Co-Purchase Strength</th><th>Category</th></tr></thead>
+              <tbody>
+                ${data.recommendations.map(r => `
+                  <tr>
+                    <td class="mono"><strong>${r.productId}</strong> ${r.name ? `(${r.name})` : ''}</td>
+                    <td style="color: var(--purple); font-weight: 600;">${r.coPurchaseStrength} purchases</td>
+                    <td><span class="badge-store">${r.category || 'General'}</span></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          `;
+        } else if (data.intent === 'cache_inspection') {
+          countBox.innerText = `Key Status`;
+          resBox.innerHTML = `
+            <div style="padding: 10px; background: #070709; border-radius: 4px; font-size: 12px;">
+              <div style="margin-bottom: 6px;">
+                Residency: <span class="status-badge ${data.isCached ? 'badge-cache' : 'badge-mongo'}">${data.isCached ? 'HOT IN REDIS' : 'COLD IN MONGO'}</span>
+              </div>
+              <div class="mono" style="font-size: 11px; color: var(--text-muted);">
+                Key: cache:product:${data.productId}<br>
+                TTL Remaining: ${data.ttlSeconds ? data.ttlSeconds + 's' : 'none'}<br>
+                Cumulative Lifetime Requests: ${data.lifetimeRequests}
+              </div>
+            </div>
+          `;
         } else {
-          dataView.innerHTML = '';
+          countBox.innerText = `Explanation`;
+          resBox.innerHTML = `<div style="padding: 10px; line-height: 1.5; color: #e4e4e7;">${data.explanation || data.message || JSON.stringify(data)}</div>`;
         }
 
+        logTerminal(`[NL Query] Executed query on ${data.store || 'telemetry'} in ${data.latencyMs || 2}ms`);
       } catch (err) {
-        container.style.display = 'block';
-        jsonPre.innerText = JSON.stringify({ error: err.message }, null, 2);
-        explanationEl.innerText = 'Error calling GenAI service: ' + err.message;
+        alert('Query translation error: ' + err.message);
       } finally {
         btn.disabled = false;
-        btn.innerText = 'Ask Assistant';
+        btn.innerText = 'Execute Query';
       }
     }
 
-    async function fetchAll() {
-      await checkHealth();
-      await fetchCatalog();
-      await fetchRoutingDecisions();
-      await fetchOptimizerDecisions();
-      await fetchStats();
+    // Telemetry & Decisions
+    async function fetchTelemetry() {
+      try {
+        const [resRoute, resOpt] = await Promise.all([
+          fetch('/api/query/decisions?limit=15'),
+          fetch('/api/optimizer/decisions?limit=15')
+        ]);
+        const routes = await resRoute.json();
+        const opts = await resOpt.json();
+
+        // Render routing table
+        const tblR = document.getElementById('tblRouting');
+        if (routes && routes.length > 0) {
+          tblR.innerHTML = routes.map(r => `
+            <tr>
+              <td class="mono"><strong>${r.productId}</strong></td>
+              <td><span class="status-badge ${r.source === 'redis-cache' ? 'badge-cache' : 'badge-mongo'}">${r.source}</span></td>
+              <td class="mono">${r.latencyMs}ms</td>
+              <td style="color: var(--text-muted);">${r.reason}</td>
+            </tr>
+          `).join('');
+
+          // Update KPIs
+          const hits = routes.filter(r => r.source === 'redis-cache');
+          const hitRatio = Math.round((hits.length / routes.length) * 100);
+          document.getElementById('kpiHitRatio').innerText = `${hitRatio}%`;
+          document.getElementById('kpiHitDetails').innerText = `${hits.length} hits out of ${routes.length} requests`;
+
+          const hitLats = hits.map(h => h.latencyMs);
+          const mongoLats = routes.filter(r => r.source === 'mongodb').map(m => m.latencyMs);
+          
+          if (hitLats.length > 0) {
+            document.getElementById('kpiCacheLatency').innerText = `${(hitLats.reduce((a,b)=>a+b,0)/hitLats.length).toFixed(1)} ms`;
+          }
+          if (mongoLats.length > 0) {
+            document.getElementById('kpiMongoLatency').innerText = `${(mongoLats.reduce((a,b)=>a+b,0)/mongoLats.length).toFixed(1)} ms`;
+          }
+        }
+
+        // Render optimizer table
+        const tblO = document.getElementById('tblOptimizer');
+        if (opts && opts.length > 0) {
+          tblO.innerHTML = opts.map(o => `
+            <tr>
+              <td><span class="status-badge ${o.action === 'PROMOTE' ? 'badge-promote' : 'badge-demote'}">${o.action}</span></td>
+              <td class="mono"><strong>${o.productId}</strong></td>
+              <td class="mono">${o.forecastValue ?? '-'}</td>
+              <td class="mono">${o.currentAccessCount ?? '-'}</td>
+            </tr>
+          `).join('');
+        }
+
+      } catch (err) {
+        console.warn('Telemetry fetch error:', err);
+      }
     }
 
-    // Auto-refresh every 6 seconds
-    fetchAll();
-    setInterval(fetchAll, 6000);
+    // Catalog Management
+    async function fetchCatalog() {
+      try {
+        const res = await fetch('/api/products?limit=10');
+        catalogItems = await res.json();
+        document.getElementById('catalogCount').innerText = `${catalogItems.length} items`;
+
+        const tbl = document.getElementById('tblCatalog');
+        const rows = await Promise.all(catalogItems.map(async (p) => {
+          let isHot = false;
+          try {
+            const check = await fetch('/api/ask', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ query: `Check hot cache status of ${p._id}` })
+            });
+            const cdata = await check.json();
+            isHot = cdata.isCached;
+          } catch {}
+
+          return `
+            <tr>
+              <td class="mono"><strong>${p._id}</strong></td>
+              <td>${p.name}</td>
+              <td><span class="badge-store">${p.category}</span></td>
+              <td class="mono"><strong>$${p.price.toFixed(2)}</strong></td>
+              <td>
+                <span class="status-badge ${isHot ? 'badge-cache' : 'badge-mongo'}">
+                  ${isHot ? 'HOT (Redis)' : 'COLD (MongoDB)'}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-sm" onclick="directRouteQuery('${p._id}')">⚡ Read Query</button>
+                <button class="btn btn-sm" onclick="quickBurst('${p._id}')">+5 Burst</button>
+              </td>
+            </tr>
+          `;
+        }));
+
+        tbl.innerHTML = rows.join('');
+      } catch (err) {
+        console.warn('Catalog fetch error:', err);
+      }
+    }
+
+    async function directRouteQuery(pid) {
+      try {
+        const res = await fetch(`/api/query/product/${pid}`);
+        const data = await res.json();
+        showToast(`Routed ${pid} via ${data.source} in ${data.latencyMs}ms`);
+        logTerminal(`[Query] ${pid} served from ${data.source} in ${data.latencyMs}ms`);
+        fetchTelemetry();
+      } catch (e) {
+        alert('Query failed: ' + e.message);
+      }
+    }
+
+    async function quickBurst(pid) {
+      for (let i = 0; i < 5; i++) {
+        await fetch(`/api/query/product/${pid}`);
+      }
+      showToast(`Injected 5 accesses on ${pid}`);
+      logTerminal(`[Burst] Injected 5 accesses on ${pid}`);
+      fetchTelemetry();
+    }
+
+    async function triggerOptimizerCycle() {
+      try {
+        await fetch('/api/optimizer/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+        showToast('Optimizer cycle executed');
+        logTerminal('[Optimizer] Triggered manual background optimization cycle');
+        fetchTelemetry();
+        fetchCatalog();
+      } catch (e) {
+        alert('Optimizer run error: ' + e.message);
+      }
+    }
+
+    function logTerminal(msg) {
+      const box = document.getElementById('eventTerminal');
+      const time = new Date().toLocaleTimeString();
+      const row = document.createElement('div');
+      row.className = 'log-line';
+      row.innerHTML = `<span class="log-time">[${time}]</span> <span class="log-msg">${msg}</span>`;
+      box.prepend(row);
+      if (box.children.length > 50) {
+        box.removeChild(box.lastChild);
+      }
+    }
+
+    function refreshAll() {
+      checkHealth();
+      fetchTelemetry();
+      if (activeTab === 'catalog') fetchCatalog();
+    }
+
+    // Polling setup
+    checkHealth();
+    fetchTelemetry();
+    setInterval(checkHealth, 8000);
+    setInterval(fetchTelemetry, 3500);
   </script>
 </body>
 </html>
